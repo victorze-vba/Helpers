@@ -30,10 +30,18 @@ Public Enum MomentType
     Seconds
 End Enum
 
+Public Enum MomentTypeOf
+    OfYear
+    OfMonth
+    OfDay
+    OfHour
+    OfMinute
+End Enum
+
 ''
 ' Establecer el valor de la fecha (momento)
 '
-' @param Double NewDate fecha de tipo 'Integer' o 'Date'
+' @param Double NewMoment(fecha de tipo 'Integer', 'Double' o 'Date')
 ''
 Public Property Let Moment(NewMoment As Double)
     pMoment = NewMoment
@@ -56,8 +64,8 @@ End Function
 ' @param  MomentType AddType (tipo de unidad ej: Days, Hours...)
 ' @return void
 ''
-Public Sub Add(Number As Integer, AddType As MomentType)
-    Select Case AddType
+Public Sub Add(Number As Integer, TimeType As MomentType)
+    Select Case TimeType
         Case Years
             pMoment = DateAdd("YYYY", Number, pMoment)
         Case Months
@@ -73,5 +81,18 @@ Public Sub Add(Number As Integer, AddType As MomentType)
     End Select
 End Sub
 
-
-
+Public Sub StartTime(TimeType As MomentTypeOf)
+    Select Case TimeType
+        Case OfYear
+            pMoment = DateSerial(Year(pMoment), 1, 1)
+        Case OfMonth
+            pMoment = DateSerial(Year(pMoment), Month(pMoment), 1)
+        Case OfDay
+            pMoment = DateSerial(Year(pMoment), Month(pMoment), Day(pMoment))
+        Case OfHour
+            Add -Minute(pMoment), Minutes
+            Add -Second(pMoment), Seconds
+        Case Minutes
+            Add -Second(pMoment), Seconds
+    End Select
+End Sub
