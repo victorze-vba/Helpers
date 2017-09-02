@@ -58,7 +58,7 @@ End Function
 ' Una vez que tenga un 'Moment', tal vez quiera manipularlo de alguna manera.
 
 ''
-' Sumar o restar una unidad de tiempo
+' Suma o resta una unidad de tiempo
 '
 ' @param  Integer    Number  (cantidad de tiempo que se suma o se resta)
 ' @param  MomentType AddType (tipo de unidad ej: Days, Hours...)
@@ -81,6 +81,12 @@ Public Sub Add(Number As Integer, TimeType As MomentType)
     End Select
 End Sub
 
+''
+' Cambia el 'momento' al inicio de una unidad de tiempo.
+'
+' @param  MomentTypeOf TimeType (tipo de tiempo a cambiar)
+' @return void
+''
 Public Sub StartTime(TimeType As MomentTypeOf)
     Select Case TimeType
         Case OfYear
@@ -94,5 +100,30 @@ Public Sub StartTime(TimeType As MomentTypeOf)
             Add -Second(pMoment), Seconds
         Case Minutes
             Add -Second(pMoment), Seconds
+    End Select
+End Sub
+
+''
+' Cambia el 'momento' al final de una unidad de tiempo.
+'
+' @param  MomentTypeOf TimeType (tipo de tiempo a cambiar)
+' @return void
+''
+Public Sub EndTime(TimeType As MomentTypeOf)
+    Select Case TimeType
+        Case OfYear
+            pMoment = DateSerial(Year(pMoment) + 1, 1, 1)
+            Add -1, Seconds
+        Case OfMonth
+            pMoment = DateSerial(Year(pMoment), Month(pMoment) + 1, 1)
+            Add -1, Seconds
+        Case OfDay
+            pMoment = DateSerial(Year(pMoment), Month(pMoment), Day(pMoment) + 1)
+            Add -1, Seconds
+        Case OfHour
+            Add 59 - Minute(pMoment), Minutes
+            Add 59 - Second(pMoment), Seconds
+        Case Minutes
+            Add 59 - Second(pMoment), Seconds
     End Select
 End Sub
