@@ -44,18 +44,20 @@ End Enum
 ' @param Double NewMoment(fecha de tipo 'Integer', 'Double' o 'Date')
 ''
 Public Property Let Moment(NewMoment As Double)
-    pMoment = NewMoment
+    If NewMoment <= 0 Then
+        Err.Raise 65535, , "El valor del objeto 'Moment' debe ser positivo."
+    ElseIf pMoment > 0 Then
+        Err.Raise 65534, , "El objeto 'Moment' ya posee un valor."
+    Else
+        pMoment = NewMoment
+    End If
 End Property
-
-Public Function ToISOString() As String
-    ToISOString = Format(pMoment, "yyyy-mm-dd hh:nn:ss")
-End Function
 
 ' --------------------------------------------- '
 ' Manipular
 ' --------------------------------------------- '
 
-' Una vez que tenga un 'Moment', tal vez quiera manipularlo de alguna manera.
+' Una vez que tenga un 'momento', tal vez quiera manipularlo de alguna manera.
 
 ''
 ' Suma o resta una unidad de tiempo
@@ -87,7 +89,7 @@ End Sub
 ' @param  MomentTypeOf TimeType (tipo de tiempo a cambiar)
 ' @return void
 ''
-Public Sub StartTime(TimeType As MomentTypeOf)
+Public Sub GoStart(TimeType As MomentTypeOf)
     Select Case TimeType
         Case OfYear
             pMoment = DateSerial(Year(pMoment), 1, 1)
@@ -109,7 +111,7 @@ End Sub
 ' @param  MomentTypeOf TimeType (tipo de tiempo a cambiar)
 ' @return void
 ''
-Public Sub EndTime(TimeType As MomentTypeOf)
+Public Sub GoEnd(TimeType As MomentTypeOf)
     Select Case TimeType
         Case OfYear
             pMoment = DateSerial(Year(pMoment) + 1, 1, 1)
@@ -127,3 +129,84 @@ Public Sub EndTime(TimeType As MomentTypeOf)
             Add 59 - Second(pMoment), Seconds
     End Select
 End Sub
+
+
+' --------------------------------------------- '
+' Mostrar
+' --------------------------------------------- '
+
+' Despúes de hacer una manipulación, usted necesita alguna forma de mostrar el 'momento'
+
+''
+' Retorna el 'momento' según formato.
+'
+' @param  String FormatDate (formato de fecha, por defecto: "dd/mm/yyyy")
+' @return String
+''
+Public Function ToFormat(Optional FormatDate As String = "dd/mm/yyyy") As String
+    ToFormat = Format(pMoment, FormatDate)
+End Function
+
+''
+' Retorna la 'momento' en formato iso "yyyy-mm-dd hh:nn:ss"
+'
+' @return String
+''
+Public Function ToISOString() As String
+    ToISOString = Format(pMoment, "yyyy-mm-dd hh:nn:ss")
+End Function
+
+''
+' Retorna el 'momento' en texto, ej: domingo, 24 de diciembre de 2017
+'
+' @return String
+''
+Public Function ToString()
+    ToString = FormatDateTime(pMoment, vbLongDate)
+End Function
+
+''
+' Retorna el momento en formato 'Double'
+'
+' @return Double
+''
+Public Function ValueOf() As Double
+    ValueOf = pMoment
+End Function
+
+''
+' Retorna la diferencia en días entre dos momentos
+'
+' @param  Moment RefDate (fecha de referencia)
+' @return Double
+''
+Public Function DiffDays(RefDate As Moment) As Double
+    DiffDays = DateDiff("d", pMoment, RefDate.ValueOf)
+End Function
+
+''
+' Retorna el año del momento. ej 2018
+'
+' @return Integer
+''
+Public Function GetYear() As Integer
+    GetYear = Year(pMoment)
+End Function
+
+''
+' Retorna el mes del momento. 1-12
+'
+' @return Integer
+''
+Public Function GetMonth() As Integer
+    GetMonth = Month(pMoment)
+End Function
+
+''
+' Retorna el día del momento. 1-31
+'
+' @return Integer
+''
+Public Function GetDay() As Integer
+    GetDay = Day(pMoment)
+End Function

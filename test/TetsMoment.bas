@@ -9,6 +9,8 @@ Sub test_moment()
     Call test_moment_manipulate_start_of
     
     Call test_moment_manipulate_end_of
+    
+    Call test_moment_display
 End Sub
 
 Sub test_moment_new_date()
@@ -32,7 +34,7 @@ Sub test_moment_new_date()
     With Specs.It("crear una fecha con tipo 'Date' con horas, minutos y segundos")
         .Expect(MyMoment.ToISOString).ToEqual "2017-12-24 10:19:12"
     End With
-    
+
     ' Fecha con numero entero
     Set MyMoment = New Moment
     MyMoment.Moment = 43093
@@ -167,7 +169,7 @@ Sub test_moment_manipulate_start_of()
     ' Año
     Set MyMoment = New Moment
     MyMoment.Moment = ReferenceMoment
-    MyMoment.StartTime OfYear
+    MyMoment.GoStart OfYear
     
     With Specs.It("debe cambiar a inicio del año")
         .Expect(MyMoment.ToISOString).ToEqual "2017-01-01 00:00:00"
@@ -176,7 +178,7 @@ Sub test_moment_manipulate_start_of()
     ' Mes
     Set MyMoment = New Moment
     MyMoment.Moment = ReferenceMoment
-    MyMoment.StartTime OfMonth
+    MyMoment.GoStart OfMonth
 
     With Specs.It("debe cambiar a inicio del mes")
         .Expect(MyMoment.ToISOString).ToEqual "2017-12-01 00:00:00"
@@ -185,7 +187,7 @@ Sub test_moment_manipulate_start_of()
     ' Día
     Set MyMoment = New Moment
     MyMoment.Moment = ReferenceMoment
-    MyMoment.StartTime OfDay
+    MyMoment.GoStart OfDay
 
     With Specs.It("debe cambiar a inicio del día")
         .Expect(MyMoment.ToISOString).ToEqual "2017-12-24 00:00:00"
@@ -194,7 +196,7 @@ Sub test_moment_manipulate_start_of()
     ' Hora
     Set MyMoment = New Moment
     MyMoment.Moment = ReferenceMoment
-    MyMoment.StartTime OfHour
+    MyMoment.GoStart OfHour
 
     With Specs.It("debe cambiar a inicio de la hora")
         .Expect(MyMoment.ToISOString).ToEqual "2017-12-24 10:00:00"
@@ -203,7 +205,7 @@ Sub test_moment_manipulate_start_of()
     ' Minuto
     Set MyMoment = New Moment
     MyMoment.Moment = ReferenceMoment
-    MyMoment.StartTime OfMinute
+    MyMoment.GoStart OfMinute
 
     With Specs.It("debe cambiar a inicio del minuto")
         .Expect(MyMoment.ToISOString).ToEqual "2017-12-24 10:19:00"
@@ -225,7 +227,7 @@ Sub test_moment_manipulate_end_of()
     ' Año
     Set MyMoment = New Moment
     MyMoment.Moment = ReferenceMoment
-    MyMoment.EndTime OfYear
+    MyMoment.GoEnd OfYear
     
     With Specs.It("debe cambiar a fin de año")
         .Expect(MyMoment.ToISOString).ToEqual "2017-12-31 23:59:59"
@@ -234,7 +236,7 @@ Sub test_moment_manipulate_end_of()
     ' Mes
     Set MyMoment = New Moment
     MyMoment.Moment = ReferenceMoment
-    MyMoment.EndTime OfMonth
+    MyMoment.GoEnd OfMonth
     
     With Specs.It("debe cambiar a fin de mes")
         .Expect(MyMoment.ToISOString).ToEqual "2017-12-31 23:59:59"
@@ -243,7 +245,7 @@ Sub test_moment_manipulate_end_of()
     ' Día
     Set MyMoment = New Moment
     MyMoment.Moment = ReferenceMoment
-    MyMoment.EndTime OfDay
+    MyMoment.GoEnd OfDay
     
     With Specs.It("debe cambiar a fin del día")
         .Expect(MyMoment.ToISOString).ToEqual "2017-12-24 23:59:59"
@@ -252,7 +254,7 @@ Sub test_moment_manipulate_end_of()
     ' Hora
     Set MyMoment = New Moment
     MyMoment.Moment = ReferenceMoment
-    MyMoment.EndTime OfHour
+    MyMoment.GoEnd OfHour
     
     With Specs.It("debe cambiar al final de la hora")
         .Expect(MyMoment.ToISOString).ToEqual "2017-12-24 10:59:59"
@@ -261,7 +263,7 @@ Sub test_moment_manipulate_end_of()
     ' Minuto
     Set MyMoment = New Moment
     MyMoment.Moment = ReferenceMoment
-    MyMoment.EndTime OfMinute
+    MyMoment.GoEnd OfMinute
     
     With Specs.It("debe cambiar al final del minuto")
         .Expect(MyMoment.ToISOString).ToEqual "2017-12-24 10:19:59"
@@ -270,10 +272,54 @@ Sub test_moment_manipulate_end_of()
     InlineRunner.RunSuite Specs, True, False, True
 End Sub
 
-Sub test_moment_query()
-
-End Sub
-
-Sub test_moment_customize()
-
+Sub test_moment_display()
+    Dim Specs As New SpecSuite
+    Dim MyMoment As Moment
+    Dim RefMoment As New Moment
+    Dim ReferenceMoment As Date
+    
+    Specs.Description = "Mostrar el momento según formato"
+    
+    ReferenceMoment = CDate(43093.43) ' 24/12/2017 10:19:12 a.m.
+    
+    Set MyMoment = New Moment
+    MyMoment.Moment = ReferenceMoment
+    
+    With Specs.It("debe mostrar el momento formato 'dd/mm/yyyy'")
+        .Expect(MyMoment.ToFormat()).ToEqual "24/12/2017"
+    End With
+    
+    With Specs.It("debe mostrar el momento en formato 'dd - mm - yyyy'")
+        .Expect(MyMoment.ToFormat("dd - mm - yyyy")).ToEqual "24 - 12 - 2017"
+    End With
+    
+    With Specs.It("debe mostrar el momento texto, ej: domingo, 24 de diciembre de 2017")
+        .Expect(MyMoment.ToString()).ToEqual "domingo, 24 de diciembre de 2017"
+    End With
+    
+    With Specs.It("debe mostrar el momento en valor")
+        .Expect(MyMoment.ValueOf()).ToEqual 43093.43
+    End With
+    
+    ' diff
+    RefMoment.Moment = 43510.3  ' 14/02/2019 07:12:00 a.m.
+    
+    With Specs.It("debe mostrar la diferencia entre dos momentos en días")
+        .Expect(MyMoment.DiffDays(RefMoment)).ToEqual 417
+    End With
+    
+    ' get
+    With Specs.It("debe mostrar el año del momento")
+        .Expect(MyMoment.GetYear).ToEqual 2017
+    End With
+    
+    With Specs.It("debe mostrar el mes del momento")
+        .Expect(MyMoment.GetMonth).ToEqual 12
+    End With
+    
+    With Specs.It("debe mostrar el día del momento")
+        .Expect(MyMoment.GetDay).ToEqual 24
+    End With
+    
+    InlineRunner.RunSuite Specs, True, False, True
 End Sub
